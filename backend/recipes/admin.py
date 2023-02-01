@@ -1,14 +1,47 @@
 from django.contrib import admin
-from . import models
+from django.contrib.admin import register
+from django.contrib.auth.models import Group
 
-admin.site.register(models.Tag)
-admin.site.register(models.Ingredient)
+from .models import (IngredientAmount, Favorite, Ingredient, Recipe,
+                     Cart, Tag)
+
+admin.site.unregister(Group)
 
 
-class IngredientsInLine(admin.TabularInline):
-    model = models.Recipe.ingredients.through
+class IngredientRecipeInLine(admin.TabularInline):
+    model = Recipe.ingredients.through
+    extra = 3
 
 
-@admin.register(models.Recipe)
+@register(Tag, IngredientAmount)
+class OtherAdmin(admin.ModelAdmin):
+    pass
+
+
+@register(Ingredient)
+class IngredientAdmin(admin.ModelAdmin):
+    list_display = ('name', 'measurement_unit',)
+    list_filter = ('name',)
+    save_on_top = True
+
+
+@register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    inlines = [IngredientsInLine, ]
+    list_display = ('name', 'author',)
+    list_filter = ('name', 'author__username', 'tags__name')
+    save_on_top = True
+    inlines = (IngredientRecipeInLine, )
+
+
+@register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('user', 'recipe',)
+    list_filter = ('user',)
+    save_on_top = True
+
+
+@register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'recipe',)
+    list_filter = ('user',)
+    save_on_top = True
