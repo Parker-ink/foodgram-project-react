@@ -9,14 +9,18 @@ services:
       - ./.env
 
   frontend:
-    image: minenikolasspace/foodgram-front:latest
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
       - db
 
   backend:
-    image: minenikolasspace/foodgram:latest
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
     restart: always
     volumes:
       - static_value:/app/static/
