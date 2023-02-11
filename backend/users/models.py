@@ -8,8 +8,7 @@ USER_HELP = ('Обязательно для заполнения. '
 
 
 class User(AbstractUser):
-    """Модель для пользователей."""
-    username = models.CharField('Уникальный юзернейм',
+    username = models.CharField('Имя пользователя',
                                 max_length=MAX_LEN_FIELD,
                                 blank=False,
                                 unique=True,
@@ -20,7 +19,7 @@ class User(AbstractUser):
                                 help_text=USER_HELP)
     email = models.CharField(max_length=254,
                              blank=False,
-                             verbose_name='Адрес электронной почты',
+                             verbose_name='Электронная почта',
                              help_text='Обязательно для заполнения')
     first_name = models.CharField('Имя',
                                   max_length=MAX_LEN_FIELD,
@@ -40,7 +39,6 @@ class User(AbstractUser):
 
 
 class Follow(models.Model):
-    """Модель для подписчиков."""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

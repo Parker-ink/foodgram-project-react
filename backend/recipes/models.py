@@ -13,7 +13,7 @@ class Ingredient(models.Model):
         )
 
     class Meta:
-        ordering = ['name']
+        ordering = ('name', )
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
         constraints = [
@@ -100,13 +100,13 @@ class IngredientAmount(models.Model):
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт',
-        related_name='amounts'
+        related_name='amount_ingredient',
     )
-    ingredient = models.ForeignKey(
+    ingredients = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Ингредиент',
-        related_name='amounts'
+        related_name='amount_ingredient',
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
@@ -124,7 +124,7 @@ class IngredientAmount(models.Model):
         verbose_name_plural = 'Количество ингредиентов'
 
     def __str__(self) -> str:
-        return f'{self.amount} {self.ingredient}'
+        return f'{self.amount} {self.ingredients}'
 
 
 class Favorite(models.Model):
@@ -146,18 +146,18 @@ class Favorite(models.Model):
         verbose_name_plural = 'Избранные'
 
 
-class Cart(models.Model):
+class ShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='Пользователь',
-        related_name='carts',
+        related_name='shopping_cart',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт',
-        related_name='carts',
+        related_name='shopping_cart',
     )
 
     class Meta:

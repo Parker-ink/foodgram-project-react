@@ -2,8 +2,8 @@ from django.db.models import F
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import (IngredientAmount, Favorite, Ingredient, Recipe,
-                            Cart, Tag)
+from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
+                            ShoppingCart, Tag)
 from rest_framework.serializers import (CharField, EmailField, Field,
                                         IntegerField, ModelSerializer,
                                         PrimaryKeyRelatedField, ReadOnlyField,
@@ -92,16 +92,14 @@ class RecipeSerializer(ModelSerializer):
     def get_is_in_shopping_cart(self, obj):
         user = self.context.get('request').user
         if user.is_authenticated:
-            return Cart.objects.filter(
+            return ShoppingCart.objects.filter(
                 user=user, recipe=obj).exists()
         return False
 
     def get_is_favorited(self, obj):
         user = self.context.get('request').user
-        if user.is_authenticated or self.context.get('request') is not None:
-            return Favorite.objects.filter(
-                user=user, recipe=obj).exists()
-        return False
+        return Favorite.objects.filter(
+                user__username=user, recipe=obj).exists()
 
     @staticmethod
     def get_ingredients(obj):

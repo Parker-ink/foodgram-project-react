@@ -2,8 +2,8 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import (IngredientAmount, Favorite, Ingredient, Recipe,
-                            Cart, Tag)
+from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
+                            ShoppingCart, Tag)
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -118,12 +118,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
-            Cart.objects.create(user=request.user,
-                                recipe=recipe)
+            ShoppingCart.objects.create(user=request.user,
+                                        recipe=recipe)
             serializer = RecipeForFollowersSerializer(recipe)
             return Response(data=serializer.data,
                             status=status.HTTP_201_CREATED)
-        deleted = get_object_or_404(Cart,
+        deleted = get_object_or_404(ShoppingCart,
                                     user=request.user,
                                     recipe=recipe)
         deleted.delete()
