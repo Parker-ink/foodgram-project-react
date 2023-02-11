@@ -6,10 +6,10 @@ from users.models import User
 class Ingredient(models.Model):
     name = models.CharField(
         verbose_name='Название ингредиент', max_length=200
-        )
+    )
     measurement_unit = models.CharField(
         verbose_name='Единица измерений', max_length=200
-        )
+    )
 
     class Meta:
         ordering = ('name', )
@@ -61,10 +61,10 @@ class Recipe(models.Model):
     name = models.CharField(
         max_length=200,
         verbose_name='Название'
-        )
+    )
     image = models.ImageField(
         verbose_name='Картинка',
-        )
+    )
     text = models.TextField(
         verbose_name='Описание'
     )

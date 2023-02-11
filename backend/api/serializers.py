@@ -99,7 +99,7 @@ class RecipeSerializer(ModelSerializer):
     def get_is_favorited(self, obj):
         user = self.context.get('request').user
         return Favorite.objects.filter(
-                user__username=user, recipe=obj).exists()
+            user__username=user, recipe=obj).exists()
 
     @staticmethod
     def get_ingredients(obj):
