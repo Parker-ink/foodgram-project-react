@@ -18,7 +18,8 @@ from .pagination import LimitPagePagination
 from .permissions import AdminOrAuthor, AdminOrReadOnly
 from .serializers import (FollowSerializer, IngredientSerializer,
                           RecipeCreateSerializer, RecipeForFollowersSerializer,
-                          RecipeSerializer, TagSerializer, UsersSerializer,FavoriteSerializer,ShoppingCartSerializer)
+                          RecipeSerializer, TagSerializer, UsersSerializer,
+                          FavoriteSerializer, ShoppingCartSerializer)
 
 
 class UsersViewSet(UserViewSet):
@@ -134,20 +135,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         errors = 'У вас нет данного рецепта в списке покупок'
-        return self.add_or_del_object(ShoppingCart, pk, ShoppingCartSerializer, errors)
+        return self.add_or_del_object(
+            ShoppingCart, pk, ShoppingCartSerializer, errors
+        )
 
     @action(detail=False, methods=['get'])
     def download_shopping_cart(self, request):
         user = request.user
         ingredients_list = IngredientAmount.objects.filter(
             recipe__shopping_cart__user=user).values(
-                'ingredients__name', 'ingredients__measurement_unit').annotate(Sum('amount')).order_by()
+                'ingredients__name', 'ingredients__measurement_unit').annotate(
+                    Sum('amount')).order_by()
         data = ingredients_list.values_list('ingredients__name',
-                                       'ingredients__measurement_unit',
-                                       'amount')
+                                            'ingredients__measurement_unit',
+                                            'amount')
         shopping_cart = 'Список покупок:\n'
         for name, measure, amount in data:
             shopping_cart += (f'{name.capitalize()} {amount} {measure},\n')
         response = HttpResponse(shopping_cart, content_type='text/plain')
         return response
-        
