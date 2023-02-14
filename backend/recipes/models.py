@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+
 from users.models import User
 
 
@@ -87,6 +88,7 @@ class Recipe(models.Model):
     )
 
     class Meta:
+        ordering = ('-id',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
@@ -119,6 +121,7 @@ class IngredientAmount(models.Model):
     )
 
     class Meta:
+        ordering = ('-id',)
         verbose_name = 'Количетсво ингредиента'
         verbose_name_plural = 'Количество ингредиентов'
 
@@ -131,16 +134,21 @@ class Favorite(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name='Пользователь',
-        related_name='favorites_user',
+        related_name='favorite',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт',
-        related_name='favorites',
+        related_name='favorite',
     )
 
     class Meta:
+        constraints = (
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='Уже в избранном'),
+        )
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранные'
 
@@ -160,5 +168,11 @@ class ShoppingCart(models.Model):
     )
 
     class Meta:
+        ordering = ('-id',)
+        constraints = (
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='Уже в корзине'),
+        )
         verbose_name = 'Корзина'
         verbose_name_plural = 'Корзины'

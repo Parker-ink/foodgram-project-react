@@ -1,28 +1,31 @@
-from django_filters.rest_framework import (AllValuesMultipleFilter,
-                                           BooleanFilter, FilterSet)
-from recipes.models import Recipe
+from django_filters import rest_framework as filter
+
 from rest_framework.filters import SearchFilter
 
+from recipes.models import Recipe
+from users.models import User
 
-class RecipesFilter(FilterSet):
-    tags = AllValuesMultipleFilter(field_name='tags__slug',
-                                   label='tags')
-    favorite = BooleanFilter(method='get_favorite')
-    shopping_cart = BooleanFilter(method='get_shopping_cart')
+
+class RecipesFilter(filter.FilterSet):
+    is_favorited = filter.BooleanFilter(method='filter_is_favorited')
+    is_in_shopping_cart = filter.BooleanFilter(
+        method='filter_is_in_shopping_cart')
+    author = filter.ModelChoiceFilter(queryset=User.objects.all())
+    tags = filter.AllValuesMultipleFilter(field_name='tags__slug')
+
+    def filter_is_favorited(self, queryset, name, value):
+        if self.request.user.is_authenticated and value:
+            return queryset.filter(favorite__user=self.request.user)
+        return queryset
+
+    def filter_is_in_shopping_cart(self, queryset, name, value):
+        if self.request.user.is_authenticated and value:
+            return queryset.filter(shopping_cart__user=self.request.user)
+        return queryset
 
     class Meta:
         model = Recipe
-        fields = ('author', 'tags', 'favorite',
-                  'shopping_cart')
-
-    def get_favorite(self, queryset, name, value):
-        if value:
-            return queryset.filter(favorite__user=self.request.user)
-        return queryset.exclude(favorite__user=self.request.user)
-
-    def get_shopping_cart(self, queryset, name, value):
-        if value:
-            return Recipe.objects.filter(shopping_cart__user=self.request.user)
+        fields = ('author', 'tags',)
 
 
 class IngredientSearchFilter(SearchFilter):
