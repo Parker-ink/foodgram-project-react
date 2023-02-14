@@ -14,6 +14,7 @@ ALLOWED_HOSTS = [
     '[::1]',
     'backend',
     'testserver',
+    '158.160.17.122',
 ]
 
 load_dotenv(dotenv_path='backend/.env')

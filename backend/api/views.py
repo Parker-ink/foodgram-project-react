@@ -142,14 +142,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         user = request.user
         ingredients_list = IngredientAmount.objects.filter(
-            recipe__shopping_cart__user=user).values(
+            recipe__shopping_cart__user=user).values_list(
                 'ingredients__name', 'ingredients__measurement_unit').annotate(
                     Sum('amount')).order_by()
-        data = ingredients_list.values_list('ingredients__name',
-                                            'ingredients__measurement_unit',
-                                            'amount')
         shopping_cart = 'Список покупок:\n'
-        for name, measure, amount in data:
+        for name, measure, amount in ingredients_list:
             shopping_cart += (f'{name.capitalize()} {amount} {measure},\n')
         response = HttpResponse(shopping_cart, content_type='text/plain')
         return response
