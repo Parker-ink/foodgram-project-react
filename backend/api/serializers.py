@@ -1,15 +1,19 @@
 from django.db.models import F
 from django.shortcuts import get_object_or_404
+
 from djoser.serializers import UserCreateSerializer, UserSerializer
+
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
-                            ShoppingCart, Tag)
+
 from rest_framework import serializers
 from rest_framework.serializers import (CharField, EmailField, Field,
                                         IntegerField, ModelSerializer,
                                         PrimaryKeyRelatedField, ReadOnlyField,
                                         SerializerMethodField, ValidationError)
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
+
+from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
+                            ShoppingCart, Tag)
 from users.models import Follow, User
 
 
@@ -78,7 +82,7 @@ class ReadIngredientsInRecipeSerializer(ModelSerializer):
 
 class RecipeSerializer(ModelSerializer):
     author = UsersSerializer(read_only=True)
-    ingredients = SerializerMethodField()
+    ingredients = ReadIngredientsInRecipeSerializer(source='amount_ingredient')
     tags = TagSerializer(many=True, read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(
         method_name='get_is_in_shopping_cart')
@@ -103,11 +107,6 @@ class RecipeSerializer(ModelSerializer):
             return False
         return ShoppingCart.objects.filter(
             user=request.user, recipe=obj).exists()
-
-    @staticmethod
-    def get_ingredients(obj):
-        ingredients = IngredientAmount.objects.filter(recipe=obj)
-        return ReadIngredientsInRecipeSerializer(ingredients, many=True).data
 
 
 class RecipeCreateSerializer(ModelSerializer):
@@ -189,15 +188,13 @@ class RecipeFollowUserField(Field):
     def get_attribute(self, instance):
         return Recipe.objects.filter(author=instance.author)
 
-    def to_representation(self, recipe):
-        recipes_data = RecipeForFollowersSerializer(
-            recipe,
-            context={'request': self.context.get('request')}).data
-        return recipes_data
+    def to_representation(self, instance):
+        instance = instance['author']
+        return FollowSerializer(instance=instance, context=self.context).data
 
 
 class FollowSerializer(ModelSerializer):
-    recipes = RecipeFollowUserField()
+    recipes = RecipeForFollowersSerializer(many=True, read_only=True)
     recipes_count = SerializerMethodField(read_only=True)
     id = ReadOnlyField(source='author.id')
     email = ReadOnlyField(source='author.email')
