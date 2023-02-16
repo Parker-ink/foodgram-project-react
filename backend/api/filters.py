@@ -7,6 +7,7 @@ from users.models import User
 
 
 class RecipesFilter(filter.FilterSet):
+    """Фильтр сортировки рецептов"""
     is_favorited = filter.BooleanFilter(method='filter_is_favorited')
     is_in_shopping_cart = filter.BooleanFilter(
         method='filter_is_in_shopping_cart')

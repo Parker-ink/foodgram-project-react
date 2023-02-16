@@ -8,6 +8,7 @@ USER_HELP = ('Обязательно для заполнения. '
 
 
 class User(AbstractUser):
+    """Модель пользователя"""
     username = models.CharField('Имя пользователя',
                                 max_length=MAX_LEN_FIELD,
                                 blank=False,
@@ -39,6 +40,7 @@ class User(AbstractUser):
 
 
 class Follow(models.Model):
+    """Модель для подписки"""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

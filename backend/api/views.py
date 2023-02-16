@@ -25,6 +25,7 @@ from .serializers import (FavoriteSerializer, FollowSerializer,
 
 
 class UsersViewSet(UserViewSet):
+    """Всьюсет модели пользователя"""
     queryset = User.objects.all()
     serializer_class = UsersSerializer
     pagination_class = LimitPagePagination
@@ -66,6 +67,7 @@ class UsersViewSet(UserViewSet):
 
 
 class TagViewSet(viewsets.ModelViewSet):
+    """Вьюсет для модели тэгов"""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = None
@@ -73,6 +75,7 @@ class TagViewSet(viewsets.ModelViewSet):
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
+    """Вьюсет для модели ингредиентов"""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AdminOrReadOnly,)
@@ -82,6 +85,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
+    """Вьюсет рецептов"""
     queryset = Recipe.objects.all()
     permission_classes = (AdminOrAuthor,)
     pagination_class = LimitPagePagination
