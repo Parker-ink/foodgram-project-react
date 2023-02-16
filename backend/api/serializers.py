@@ -88,7 +88,11 @@ class ReadIngredientsInRecipeSerializer(ModelSerializer):
 class RecipeSerializer(ModelSerializer):
     """Сериализатор для рецептов"""
     author = UsersSerializer(read_only=True)
-    ingredients = ReadIngredientsInRecipeSerializer(source='amount_ingredient')
+    ingredients = ReadIngredientsInRecipeSerializer(
+        source='amount_ingredient',
+        read_only=True,
+        many=True
+    )
     tags = TagSerializer(many=True, read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(
         method_name='get_is_in_shopping_cart')
@@ -203,7 +207,7 @@ class RecipeFollowUserField(Field):
 
 class FollowSerializer(ModelSerializer):
     """Сериализатор для подписок"""
-    recipes = RecipeForFollowersSerializer(many=True, read_only=True)
+    recipes = RecipeForFollowersSerializer(many=True, source='author.recipes')
     recipes_count = SerializerMethodField(read_only=True)
     id = ReadOnlyField(source='author.id')
     email = ReadOnlyField(source='author.email')
@@ -223,11 +227,7 @@ class FollowSerializer(ModelSerializer):
         return Recipe.objects.filter(author=obj.author).count()
 
     def get_is_subscribed(self, obj):
-        author = obj
-        if not self.context['request'].user.is_anonymous:
-            return Follow.objects.filter(
-                user=self.context['request'].user, author=author
-            ).exists()
+        return Follow.objects.filter(user=obj.user, author=obj.author).exists()
 
 
 class FavoriteSerializer(ModelSerializer):

@@ -5,7 +5,8 @@ from users.models import User
 
 
 class Ingredient(models.Model):
-    """Модель Ингредиентов"""
+    """Модель Ингредиентов."""
+
     name = models.CharField(
         verbose_name='Название ингредиент', max_length=200
     )
