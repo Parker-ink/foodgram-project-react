@@ -228,8 +228,6 @@ class FollowSerializer(ModelSerializer):
             return Follow.objects.filter(
                 user=self.context['request'].user, author=author
             ).exists()
-        else:
-            return False
 
 
 class FavoriteSerializer(ModelSerializer):
