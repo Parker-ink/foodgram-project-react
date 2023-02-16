@@ -242,7 +242,7 @@ class FavoriteSerializer(ModelSerializer):
             UniqueTogetherValidator(
                 queryset=Favorite.objects.all(),
                 fields=('user', 'recipe'),
-                message='Данный рецепт уже есть в избраном'
+                message='Данный рецепт уже есть в избранном'
             ),
         )
 
@@ -251,7 +251,7 @@ class FavoriteSerializer(ModelSerializer):
         recipe = data.get('recipe')
         if Favorite.objects.filter(user=user, recipe=recipe).exists():
             raise serializers.ValidationError(
-                {'errors': 'Данный рецепт уже есть в избраном'}
+                {'errors': 'Данный рецепт уже есть в избранном'}
             )
         return data
 
