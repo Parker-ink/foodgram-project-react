@@ -1,5 +1,6 @@
-version: '3.8'
+version: '3.3'
 services:
+
   db:
     image: postgres:13.0-alpine
     volumes:
@@ -8,18 +9,14 @@ services:
       - ./.env
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: minenikolasspace/foodgram-front:latest
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
       - db
 
   backend:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
+    image: minenikolasspace/foodgram:latest
     restart: always
     volumes:
       - static_value:/app/static/
